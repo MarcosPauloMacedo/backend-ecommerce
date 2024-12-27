@@ -1,14 +1,18 @@
 package com.backend_ecommerce.backend_ecommerce.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend_ecommerce.backend_ecommerce.models.request.ProductRequest;
+import com.backend_ecommerce.backend_ecommerce.models.response.PageResponse;
 import com.backend_ecommerce.backend_ecommerce.models.response.ProductResponse;
 import com.backend_ecommerce.backend_ecommerce.services.product.ProductService;
 
@@ -24,9 +28,27 @@ public class ProductController {
         return productService.save(request);
     }
 
+    @GetMapping()
+    public PageResponse<ProductResponse> selectAll(
+    @RequestParam(defaultValue = "0") int page, 
+    @RequestParam(defaultValue = "10") int size
+    ) {
+        return productService.selectAll(page, size);
+    }
+
     @GetMapping("/{id}")
     public ProductResponse selectById(@PathVariable Long id) {
         return productService.selectById(id);
     }
 
+    @PutMapping("/{id}")
+    public ProductResponse update(@PathVariable Long id, 
+    @RequestBody ProductRequest request) {
+        return productService.update(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        productService.delete(id);
+    }
 }

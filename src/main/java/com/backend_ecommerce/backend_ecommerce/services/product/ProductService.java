@@ -1,14 +1,17 @@
 package com.backend_ecommerce.backend_ecommerce.services.product;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.backend_ecommerce.backend_ecommerce.interfaces.product.DataServiceProduct;
-import com.backend_ecommerce.backend_ecommerce.interfaces.shared.Page;
 import com.backend_ecommerce.backend_ecommerce.models.entity.Product;
 import com.backend_ecommerce.backend_ecommerce.models.mapper.ProductMapper;
 import com.backend_ecommerce.backend_ecommerce.models.repository.ProductRepository;
 import com.backend_ecommerce.backend_ecommerce.models.request.ProductRequest;
+import com.backend_ecommerce.backend_ecommerce.models.response.PageResponse;
 import com.backend_ecommerce.backend_ecommerce.models.response.ProductResponse;
 
 @Service
@@ -29,8 +32,11 @@ public class ProductService implements DataServiceProduct {
     }
 
     @Override
-    public ProductResponse update(ProductRequest request) {
-        return null;
+    public ProductResponse update(Long id, ProductRequest request) {
+        Product product = productMapper.toEntity(id,request);
+        Product productUpdate = productRepository.save(product);
+
+        return productMapper.toResponse(productUpdate);
     }
 
     @Override
@@ -40,13 +46,17 @@ public class ProductService implements DataServiceProduct {
     }
 
     @Override
-    public Page<ProductResponse> selectAll(int page, int size) {
-        return null;
+    public PageResponse<ProductResponse> selectAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Product> products = productRepository.findAll(pageable);
+
+        return productMapper.toResponsePage(products);
     }
 
     @Override
-    public void delete(ProductRequest request) {
-        
+    public void delete(Long id) {
+        Product product = productRepository.findById(id).get();
+        productRepository.delete(product);
     }
-    
 }
