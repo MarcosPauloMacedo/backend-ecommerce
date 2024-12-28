@@ -5,5 +5,4 @@ import com.backend_ecommerce.backend_ecommerce.models.entity.Product;
 import com.backend_ecommerce.backend_ecommerce.models.request.ProductRequest;
 import com.backend_ecommerce.backend_ecommerce.models.response.ProductResponse;
 
-public interface MapperProduct extends Mapper<
-ProductRequest,ProductResponse, Product> {}
+public interface MapperProduct extends Mapper<ProductRequest,ProductResponse, Product> {}
