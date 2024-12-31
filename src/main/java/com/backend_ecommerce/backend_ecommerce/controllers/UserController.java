@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.backend_ecommerce.backend_ecommerce.models.request.UserRequest;
 import com.backend_ecommerce.backend_ecommerce.models.response.PageResponse;
 import com.backend_ecommerce.backend_ecommerce.models.response.UserResponse;
+import com.backend_ecommerce.backend_ecommerce.models.utils.PageFilter;
 import com.backend_ecommerce.backend_ecommerce.services.user.UserService;
 
 @RestController
@@ -31,9 +32,12 @@ public class UserController {
     @GetMapping()
     public PageResponse<UserResponse> selectAll(
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "ASC") String sortOrder,
+        @RequestParam(defaultValue = "id") String sortField
     ) {
-        return userService.selectAll(page, size);
+        var pageFilter = new PageFilter(page, size, sortOrder, sortField);
+        return userService.selectAll(pageFilter);
     }
 
     @GetMapping("/{id}")
