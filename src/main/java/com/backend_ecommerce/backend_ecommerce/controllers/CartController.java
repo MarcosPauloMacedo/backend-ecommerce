@@ -17,19 +17,25 @@ import com.backend_ecommerce.backend_ecommerce.models.response.PageResponse;
 import com.backend_ecommerce.backend_ecommerce.models.utils.PageFilter;
 import com.backend_ecommerce.backend_ecommerce.services.cart.CartService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/cart")
+@Tag(name = "Carrinho de compras", description = "Gerenciamento de carrinhos de compras")
 public class CartController {
 
     @Autowired
     private CartService cartService;
 
     @PostMapping()
+    @Operation(summary = "Salvar um carrinho de compras")
     public CartResponse save(@RequestBody CartRequest request) {
         return cartService.save(request);
     }
 
     @GetMapping()
+    @Operation(summary = "Listar todos os carrinhos de compras")
     public PageResponse<CartResponse> selectAll(
     @RequestParam(defaultValue = "0") int page,
     @RequestParam(defaultValue = "10") int size,
@@ -42,21 +48,25 @@ public class CartController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar um carrinho de compras pelo ID")
     public CartResponse selectById(@PathVariable Long id) {
         return cartService.selectById(id);
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Atualizar um carrinho de compras pelo ID")
     public CartResponse update(@PathVariable Long id, @RequestBody CartRequest request) {
         return cartService.update(id, request);
     }
     
     @DeleteMapping("/{id}")
+    @Operation(summary = "Deletar um carrinho de compras pelo ID")
     public void delete(@PathVariable Long id) {
         cartService.delete(id);
     }
 
     @GetMapping("/totalPrice/{userId}")
+    @Operation(summary = "Calcular o preço total do carrinho de compras de um usuário")
     public String calculateTotalPriceCartByUser(@PathVariable Long userId) {
         return cartService.calculateTotalPriceCartByUser(userId);
     }
