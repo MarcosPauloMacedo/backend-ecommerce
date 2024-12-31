@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.backend_ecommerce.backend_ecommerce.interfaces.cart.MapperCart;
 import com.backend_ecommerce.backend_ecommerce.models.entity.Cart;
+import com.backend_ecommerce.backend_ecommerce.models.entity.User;
 import com.backend_ecommerce.backend_ecommerce.models.request.CartRequest;
 import com.backend_ecommerce.backend_ecommerce.models.response.CartResponse;
 import com.backend_ecommerce.backend_ecommerce.models.response.PageResponse;
@@ -36,6 +37,14 @@ public class CartMapper implements MapperCart {
         cart.setId(id);
 
         return cart;
+    }
+
+    @Override
+    public User toUserEntity(Long userId) {
+        User user = new User();
+        user.setId(userId);
+
+        return user;
     }
 
     @Override
