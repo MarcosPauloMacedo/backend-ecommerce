@@ -2,8 +2,8 @@ package com.backend_ecommerce.backend_ecommerce.services.product;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.backend_ecommerce.backend_ecommerce.interfaces.product.DataServiceProduct;
@@ -13,6 +13,9 @@ import com.backend_ecommerce.backend_ecommerce.models.repository.ProductReposito
 import com.backend_ecommerce.backend_ecommerce.models.request.ProductRequest;
 import com.backend_ecommerce.backend_ecommerce.models.response.PageResponse;
 import com.backend_ecommerce.backend_ecommerce.models.response.ProductResponse;
+import com.backend_ecommerce.backend_ecommerce.models.utils.PageFilter;
+import com.backend_ecommerce.backend_ecommerce.models.utils.PageProductFilter;
+import com.backend_ecommerce.backend_ecommerce.services.shared.CreatePageable;
 
 @Service
 public class ProductService implements DataServiceProduct {
@@ -22,6 +25,12 @@ public class ProductService implements DataServiceProduct {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private CreatePageable createPageable;
+
+    @Autowired
+    private ProductSearch productSearch;
     
     @Override
     public ProductResponse save(ProductRequest request) {
@@ -46,10 +55,13 @@ public class ProductService implements DataServiceProduct {
     }
 
     @Override
-    public PageResponse<ProductResponse> selectAll(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public PageResponse<ProductResponse> selectAll(PageFilter pageFilter,
+    PageProductFilter pageProductFilter) {
+        
+        Pageable pageable = createPageable.execute(pageFilter);
+        Specification<Product> specification = productSearch.execute(pageProductFilter);
 
-        Page<Product> products = productRepository.findAll(pageable);
+        Page<Product> products = productRepository.findAll(specification,pageable);
 
         return productMapper.toResponsePage(products);
     }
