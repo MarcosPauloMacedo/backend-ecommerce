@@ -17,19 +17,25 @@ import com.backend_ecommerce.backend_ecommerce.models.response.UserResponse;
 import com.backend_ecommerce.backend_ecommerce.models.utils.PageFilter;
 import com.backend_ecommerce.backend_ecommerce.services.user.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/user")
+@Tag(name = "Usuários", description = "Gerenciamento de usuários")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
     @PostMapping()
+    @Operation(summary = "Salvar um usuário")
     public UserResponse save(@RequestBody UserRequest request) {
         return userService.save(request);
     }
 
     @GetMapping()
+    @Operation(summary = "Listar todos os usuários")
     public PageResponse<UserResponse> selectAll(
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size,
@@ -41,16 +47,19 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar um usuário pelo ID")
     public UserResponse selectById(@PathVariable Long id) {
         return userService.selectById(id);
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Atualizar um usuário pelo ID")
     public UserResponse update(@PathVariable Long id, @RequestBody UserRequest request) {
         return userService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Deletar um usuário pelo ID")
     public void delete(@PathVariable Long id) {
         userService.delete(id);
     }

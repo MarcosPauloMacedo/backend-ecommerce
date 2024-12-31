@@ -18,19 +18,25 @@ import com.backend_ecommerce.backend_ecommerce.models.utils.PageProductFilter;
 import com.backend_ecommerce.backend_ecommerce.models.utils.PageFilter;
 import com.backend_ecommerce.backend_ecommerce.services.product.ProductService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/product")
+@Tag(name = "Produtos", description = "Gerenciamento de produtos")
 public class ProductController {
 
     @Autowired
     private ProductService productService;
-
+    
     @PostMapping()
+    @Operation(summary = "Salvar um produto")
     public ProductResponse save(@RequestBody ProductRequest request) {
         return productService.save(request);
     }
 
     @GetMapping()
+    @Operation(summary = "Listar todos os produtos")
     public PageResponse<ProductResponse> selectAll(
     @RequestParam(defaultValue = "0") int page, 
     @RequestParam(defaultValue = "10") int size,
@@ -48,17 +54,20 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar um produto pelo ID")
     public ProductResponse selectById(@PathVariable Long id) {
         return productService.selectById(id);
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Atualizar um produto pelo ID")
     public ProductResponse update(@PathVariable Long id, 
     @RequestBody ProductRequest request) {
         return productService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Deletar um produto pelo ID")
     public void delete(@PathVariable Long id) {
         productService.delete(id);
     }
