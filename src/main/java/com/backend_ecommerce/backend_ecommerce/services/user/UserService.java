@@ -2,7 +2,6 @@ package com.backend_ecommerce.backend_ecommerce.services.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +12,8 @@ import com.backend_ecommerce.backend_ecommerce.models.repository.UserRepository;
 import com.backend_ecommerce.backend_ecommerce.models.request.UserRequest;
 import com.backend_ecommerce.backend_ecommerce.models.response.PageResponse;
 import com.backend_ecommerce.backend_ecommerce.models.response.UserResponse;
+import com.backend_ecommerce.backend_ecommerce.models.utils.PageFilter;
+import com.backend_ecommerce.backend_ecommerce.services.shared.CreatePageable;
 
 @Service
 public class UserService implements DataServiceUser {
@@ -22,6 +23,9 @@ public class UserService implements DataServiceUser {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CreatePageable createPageable;
 
     @Autowired
     private ValidateEmailExists validateEmailExists;
@@ -58,8 +62,8 @@ public class UserService implements DataServiceUser {
     }
 
     @Override
-    public PageResponse<UserResponse> selectAll(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public PageResponse<UserResponse> selectAll(PageFilter pageFilter) {
+        Pageable pageable = createPageable.execute(pageFilter);
 
         Page<User> users = userRepository.findAll(pageable);
 
