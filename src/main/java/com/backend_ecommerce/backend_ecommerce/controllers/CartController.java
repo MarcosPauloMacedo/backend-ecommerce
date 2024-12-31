@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.backend_ecommerce.backend_ecommerce.models.request.CartRequest;
 import com.backend_ecommerce.backend_ecommerce.models.response.CartResponse;
 import com.backend_ecommerce.backend_ecommerce.models.response.PageResponse;
+import com.backend_ecommerce.backend_ecommerce.models.utils.PageFilter;
 import com.backend_ecommerce.backend_ecommerce.services.cart.CartService;
 
 @RestController
@@ -31,9 +32,13 @@ public class CartController {
     @GetMapping()
     public PageResponse<CartResponse> selectAll(
     @RequestParam(defaultValue = "0") int page,
-    @RequestParam(defaultValue = "10") int size
+    @RequestParam(defaultValue = "10") int size,
+    @RequestParam(defaultValue = "ASC") String sortOrder,
+    @RequestParam(defaultValue = "id") String sortField
+
     ) {
-        return cartService.selectAll(page, size);
+        var pageFilter = new PageFilter(page, size, sortOrder, sortField);
+        return cartService.selectAll(pageFilter);
     }
 
     @GetMapping("/{id}")
@@ -49,5 +54,10 @@ public class CartController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         cartService.delete(id);
+    }
+
+    @GetMapping("/totalPrice/{userId}")
+    public String calculateTotalPriceCartByUser(@PathVariable Long userId) {
+        return cartService.calculateTotalPriceCartByUser(userId);
     }
 }
