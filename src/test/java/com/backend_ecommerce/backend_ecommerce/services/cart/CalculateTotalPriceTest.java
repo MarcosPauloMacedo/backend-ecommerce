@@ -13,11 +13,11 @@ import com.backend_ecommerce.backend_ecommerce.models.entity.Product;
 
 public class CalculateTotalPriceTest {
 
-    private CalculateTotalPrice calculateTotalPrice;
+    private CalculateTotalPriceCart calculateTotalPrice;
 
     @BeforeEach
     public void setUp() {
-        calculateTotalPrice = new CalculateTotalPrice();
+        calculateTotalPrice = new CalculateTotalPriceCart();
     }
 
     @Test

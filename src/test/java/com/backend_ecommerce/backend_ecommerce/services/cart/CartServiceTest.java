@@ -41,7 +41,7 @@ public class CartServiceTest {
     private CreatePageable createPageable;
 
     @Mock
-    private CalculateTotalPrice calculateTotalPrice;
+    private CalculateTotalPriceCart calculateTotalPrice;
 
     @BeforeEach
     public void setUp() {
