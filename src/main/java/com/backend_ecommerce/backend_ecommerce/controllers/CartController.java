@@ -70,4 +70,10 @@ public class CartController {
     public String calculateTotalPriceCartByUser(@PathVariable Long userId) {
         return cartService.calculateTotalPriceCartByUser(userId);
     }
+
+    @GetMapping("/amountToPayPerItem/{id}")
+    @Operation(summary = "Calcular o valor a ser pago por item")
+    public String calculatePricePerItemOfCart(@PathVariable Long id) {
+        return cartService.calculatePricePerItemOfCart(id);
+    }
 }
