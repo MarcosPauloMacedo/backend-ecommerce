@@ -16,6 +16,7 @@ import com.backend_ecommerce.backend_ecommerce.models.request.CartRequest;
 import com.backend_ecommerce.backend_ecommerce.models.response.CartResponse;
 import com.backend_ecommerce.backend_ecommerce.models.response.PageResponse;
 import com.backend_ecommerce.backend_ecommerce.models.utils.PageFilter;
+import com.backend_ecommerce.backend_ecommerce.services.shared.CalculateAmountToPayPerItem;
 import com.backend_ecommerce.backend_ecommerce.services.shared.CreatePageable;
 
 @Service
@@ -31,7 +32,10 @@ public class CartService implements DataServiceCart {
     private CreatePageable createPageable;
 
     @Autowired
-    private CalculateTotalPrice calculateTotalPrice;
+    private CalculateTotalPriceCart calculateTotalPriceCart;
+
+    @Autowired
+    private CalculateAmountToPayPerItem calculateAmountToPayPerItem;
 
     @Override
     public CartResponse save(CartRequest request) {
@@ -75,6 +79,16 @@ public class CartService implements DataServiceCart {
         User user = cartMapper.toUserEntity(userId);
         List<Cart> carts = cartRepository.findByUser(user);
         
-        return calculateTotalPrice.execute(carts);
+        return calculateTotalPriceCart.execute(carts);
+    }
+
+    @Override
+    public String calculatePricePerItemOfCart(Long id) {
+        Cart cart = cartRepository.findById(id).get();
+
+        return calculateAmountToPayPerItem.execute(
+            cart.getQuantity(),
+            cart.getProduct().getPrice()
+        );
     }
 }
