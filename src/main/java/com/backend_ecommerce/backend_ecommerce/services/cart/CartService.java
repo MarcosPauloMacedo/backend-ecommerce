@@ -18,6 +18,7 @@ import com.backend_ecommerce.backend_ecommerce.models.response.PageResponse;
 import com.backend_ecommerce.backend_ecommerce.models.utils.PageFilter;
 import com.backend_ecommerce.backend_ecommerce.services.shared.CalculateAmountToPayPerItem;
 import com.backend_ecommerce.backend_ecommerce.services.shared.CreatePageable;
+import com.backend_ecommerce.backend_ecommerce.services.shared.ValidateIfExistsById;
 
 @Service
 public class CartService implements DataServiceCart {
@@ -30,6 +31,9 @@ public class CartService implements DataServiceCart {
 
     @Autowired
     private CreatePageable createPageable;
+
+    @Autowired
+    private ValidateIfExistsById validateIfExistsById;
 
     @Autowired
     private CalculateTotalPriceCart calculateTotalPriceCart;
@@ -47,6 +51,8 @@ public class CartService implements DataServiceCart {
 
     @Override
     public CartResponse update(Long id, CartRequest request) {
+        validateIfExistsById.inCart(id);
+
         Cart cart = cartMapper.toEntity(id,request);
         Cart cartUpdate = cartRepository.save(cart);
 
@@ -55,7 +61,10 @@ public class CartService implements DataServiceCart {
 
     @Override
     public CartResponse selectById(Long id) {
+        validateIfExistsById.inCart(id);
+
         Cart cart = cartRepository.findById(id).get();
+
         return cartMapper.toResponse(cart);
     }
 
@@ -70,12 +79,14 @@ public class CartService implements DataServiceCart {
 
     @Override
     public void delete(Long id) {
-        Cart cart = cartRepository.findById(id).get();
-        cartRepository.delete(cart);
+        validateIfExistsById.inCart(id);
+        cartRepository.deleteById(id);
     }
 
     @Override
     public String calculateTotalPriceCartByUser(Long userId) {
+        validateIfExistsById.inUser(userId);
+
         User user = cartMapper.toUserEntity(userId);
         List<Cart> carts = cartRepository.findByUser(user);
         
@@ -84,6 +95,8 @@ public class CartService implements DataServiceCart {
 
     @Override
     public String calculatePricePerItemOfCart(Long id) {
+        validateIfExistsById.inCart(id);
+        
         Cart cart = cartRepository.findById(id).get();
 
         return calculateAmountToPayPerItem.execute(
