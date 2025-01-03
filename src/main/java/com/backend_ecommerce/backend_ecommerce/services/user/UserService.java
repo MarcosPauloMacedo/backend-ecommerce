@@ -14,6 +14,7 @@ import com.backend_ecommerce.backend_ecommerce.models.response.PageResponse;
 import com.backend_ecommerce.backend_ecommerce.models.response.UserResponse;
 import com.backend_ecommerce.backend_ecommerce.models.utils.PageFilter;
 import com.backend_ecommerce.backend_ecommerce.services.shared.CreatePageable;
+import com.backend_ecommerce.backend_ecommerce.services.shared.ValidateIfExistsById;
 
 @Service
 public class UserService implements DataServiceUser {
@@ -26,6 +27,9 @@ public class UserService implements DataServiceUser {
 
     @Autowired
     private CreatePageable createPageable;
+
+    @Autowired
+    private ValidateIfExistsById validateIfExistsById;
 
     @Autowired
     private ValidateEmailExists validateEmailExists;
@@ -46,6 +50,7 @@ public class UserService implements DataServiceUser {
 
     @Override
     public UserResponse update(Long id, UserRequest request) {
+        validateIfExistsById.inUser(id);
         validateEmailExists.execute(request.getEmail(), id);
         validateStrongPassword.execute(request.getPassword());
 
@@ -57,7 +62,10 @@ public class UserService implements DataServiceUser {
 
     @Override
     public UserResponse selectById(Long id) {
+        validateIfExistsById.inUser(id);
+
         User user = userRepository.findById(id).get();
+
         return userMapper.toResponse(user);
     }
 
@@ -72,7 +80,7 @@ public class UserService implements DataServiceUser {
 
     @Override
     public void delete(Long id) {
-        User user = userRepository.findById(id).get();
-        userRepository.delete(user);
+        validateIfExistsById.inUser(id);
+        userRepository.deleteById(id);
     }
 }

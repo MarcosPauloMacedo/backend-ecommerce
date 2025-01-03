@@ -18,6 +18,7 @@ import com.backend_ecommerce.backend_ecommerce.models.response.OrderItemResponse
 import com.backend_ecommerce.backend_ecommerce.models.response.PageResponse;
 import com.backend_ecommerce.backend_ecommerce.models.utils.PageFilter;
 import com.backend_ecommerce.backend_ecommerce.services.shared.CreatePageable;
+import com.backend_ecommerce.backend_ecommerce.services.shared.ValidateIfExistsById;
 
 @Service
 public class OrderItemService implements DataServiceOrderItem {
@@ -30,6 +31,9 @@ public class OrderItemService implements DataServiceOrderItem {
 
     @Autowired
     private CreatePageable createPageable;
+
+    @Autowired
+    private ValidateIfExistsById validateIfExistsById;
     
     @Override
     public OrderItemResponse save(OrderItemRequest request) {
@@ -41,6 +45,8 @@ public class OrderItemService implements DataServiceOrderItem {
 
     @Override
     public OrderItemResponse update(Long id, OrderItemRequest request) {
+        validateIfExistsById.inOrderItem(id);
+
         OrderItem orderItem = orderItemMapper.toEntity(id, request);
         OrderItem orderItemUpdate = orderItemRepository.save(orderItem);
 
@@ -49,7 +55,10 @@ public class OrderItemService implements DataServiceOrderItem {
 
     @Override
     public OrderItemResponse selectById(Long id) {
+        validateIfExistsById.inOrderItem(id);
+
         OrderItem orderItem = orderItemRepository.findById(id).get();
+
         return orderItemMapper.toResponse(orderItem);
     }
 
@@ -64,11 +73,14 @@ public class OrderItemService implements DataServiceOrderItem {
 
     @Override
     public void delete(Long id) {
+        validateIfExistsById.inOrderItem(id);
         orderItemRepository.deleteById(id);
     }
 
     @Override
     public OrderItemPageResponse selectAllByOrderId(Long orderId, PageFilter filter) {
+        validateIfExistsById.inOrder(orderId);
+        
         Pageable pageable = createPageable.execute(filter);
 
         Orders order = orderItemMapper.toOrderEntity(orderId);

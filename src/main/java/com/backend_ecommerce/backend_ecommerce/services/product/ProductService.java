@@ -16,6 +16,7 @@ import com.backend_ecommerce.backend_ecommerce.models.response.ProductResponse;
 import com.backend_ecommerce.backend_ecommerce.models.utils.PageFilter;
 import com.backend_ecommerce.backend_ecommerce.models.utils.PageProductFilter;
 import com.backend_ecommerce.backend_ecommerce.services.shared.CreatePageable;
+import com.backend_ecommerce.backend_ecommerce.services.shared.ValidateIfExistsById;
 
 @Service
 public class ProductService implements DataServiceProduct {
@@ -31,6 +32,9 @@ public class ProductService implements DataServiceProduct {
 
     @Autowired
     private ProductSearch productSearch;
+
+    @Autowired
+    private ValidateIfExistsById validateIfExistsById;
     
     @Override
     public ProductResponse save(ProductRequest request) {
@@ -42,6 +46,8 @@ public class ProductService implements DataServiceProduct {
 
     @Override
     public ProductResponse update(Long id, ProductRequest request) {
+        validateIfExistsById.inProduct(id);
+
         Product product = productMapper.toEntity(id,request);
         Product productUpdate = productRepository.save(product);
 
@@ -50,7 +56,10 @@ public class ProductService implements DataServiceProduct {
 
     @Override
     public ProductResponse selectById(Long id) {
+        validateIfExistsById.inProduct(id);
+
         Product product = productRepository.findById(id).get();
+
         return productMapper.toResponse(product);
     }
 
@@ -68,7 +77,7 @@ public class ProductService implements DataServiceProduct {
 
     @Override
     public void delete(Long id) {
-        Product product = productRepository.findById(id).get();
-        productRepository.delete(product);
+        validateIfExistsById.inProduct(id);
+        productRepository.deleteById(id);
     }
 }
