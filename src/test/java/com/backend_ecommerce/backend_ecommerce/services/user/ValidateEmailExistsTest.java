@@ -17,7 +17,7 @@ import java.util.Optional;
 public class ValidateEmailExistsTest {
 
     @InjectMocks
-    private ValidateEmailExists validateEmailExists;
+    private ValidateEmail validateEmailExists;
 
     @Mock
     private UserRepository userRepository;
