@@ -6,7 +6,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
-@ControllerAdvice
+import io.swagger.v3.oas.annotations.Hidden;
+
+@Hidden
+@ControllerAdvice()
 public class HandleExceptions {
 
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -28,9 +31,9 @@ public class HandleExceptions {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDetails> globalExceptionHandler(Exception ex, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails();
-
+        
         var timestamp = java.time.LocalDateTime.now();
-
+        
         errorDetails.setTimestamp(timestamp);
         errorDetails.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorDetails.setMessage(ex.getMessage());
