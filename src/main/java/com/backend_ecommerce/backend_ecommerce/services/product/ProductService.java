@@ -35,6 +35,9 @@ public class ProductService implements DataServiceProduct {
 
     @Autowired
     private ValidateIfExistsById validateIfExistsById;
+
+    @Autowired
+    private GetStockLowProduct getStockLowProduct;
     
     @Override
     public ProductResponse save(ProductRequest request) {
@@ -79,5 +82,15 @@ public class ProductService implements DataServiceProduct {
     public void delete(Long id) {
         validateIfExistsById.inProduct(id);
         productRepository.deleteById(id);
+    }
+
+    @Override
+    public PageResponse<ProductResponse> selectByLowStock(int quantity,PageFilter pageFilter) {
+        Pageable pageable = createPageable.execute(pageFilter);
+        Specification<Product> specification = getStockLowProduct.execute(quantity);
+
+        Page<Product> products = productRepository.findAll(specification,pageable);
+
+        return productMapper.toResponsePage(products);
     }
 }

@@ -10,4 +10,7 @@ import com.backend_ecommerce.backend_ecommerce.models.utils.PageProductFilter;
 public interface DataServiceProduct extends DataService <ProductResponse,ProductRequest> {
     PageResponse<ProductResponse> selectAll(PageFilter pageFilter,
     PageProductFilter pageProductFilter);
+
+    PageResponse<ProductResponse> selectByLowStock(int quantity, 
+    PageFilter pageFilter);
 }
