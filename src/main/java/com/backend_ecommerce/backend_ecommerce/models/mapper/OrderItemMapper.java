@@ -11,8 +11,10 @@ import com.backend_ecommerce.backend_ecommerce.interfaces.order.MapperOrderItem;
 import com.backend_ecommerce.backend_ecommerce.models.entity.OrderItem;
 import com.backend_ecommerce.backend_ecommerce.models.entity.Orders;
 import com.backend_ecommerce.backend_ecommerce.models.request.OrderItemRequest;
+import com.backend_ecommerce.backend_ecommerce.models.request.ProductAndQuantityRequest;
 import com.backend_ecommerce.backend_ecommerce.models.response.OrderItemPageResponse;
 import com.backend_ecommerce.backend_ecommerce.models.response.OrderItemResponse;
+import com.backend_ecommerce.backend_ecommerce.models.response.OrderResponse;
 import com.backend_ecommerce.backend_ecommerce.models.response.PageResponse;
 import com.backend_ecommerce.backend_ecommerce.services.order.CalculateTotalPriceOfOrder;
 import com.backend_ecommerce.backend_ecommerce.services.shared.CalculateAmountToPayPerItem;
@@ -46,6 +48,18 @@ public class OrderItemMapper implements MapperOrderItem {
         orderItem.setId(id);
 
         return orderItem;
+    }
+
+    @Override
+    public List<OrderItem> toEntityList(List<ProductAndQuantityRequest> requests,
+        OrderResponse order) {
+
+        return requests.stream().map(request -> {
+            OrderItem orderItem = modelMapper.map(request, OrderItem.class);
+            orderItem.setOrder(orderMapper.toEntity(order));
+            
+            return orderItem;
+        }).toList();
     }
 
     @Override
