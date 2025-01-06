@@ -6,4 +6,6 @@ import com.backend_ecommerce.backend_ecommerce.models.request.OrderRequest;
 import com.backend_ecommerce.backend_ecommerce.models.response.OrderResponse;
 
 public interface DataServiceOrder extends DataService<OrderResponse, OrderRequest>, 
-SelectAll<OrderResponse> {}
+SelectAll<OrderResponse> {
+    OrderResponse saveByUser(Long userId);
+}
