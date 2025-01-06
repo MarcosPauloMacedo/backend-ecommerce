@@ -25,7 +25,8 @@ public class ValidateIfExistsById {
     @Autowired
     private OrderRepository orderRepository;
 
-    @Autowired OrderItemRepository orderItemRepository;
+    @Autowired 
+    OrderItemRepository orderItemRepository;
 
     public void inUser(Long id) {
         userRepository.findById(id)

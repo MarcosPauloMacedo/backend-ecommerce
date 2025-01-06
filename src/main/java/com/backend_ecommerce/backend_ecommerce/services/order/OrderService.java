@@ -14,6 +14,7 @@ import com.backend_ecommerce.backend_ecommerce.models.response.OrderResponse;
 import com.backend_ecommerce.backend_ecommerce.models.response.PageResponse;
 import com.backend_ecommerce.backend_ecommerce.models.utils.PageFilter;
 import com.backend_ecommerce.backend_ecommerce.services.shared.CreatePageable;
+import com.backend_ecommerce.backend_ecommerce.services.shared.EmailService;
 import com.backend_ecommerce.backend_ecommerce.services.shared.ValidateIfExistsById;
 
 @Service
@@ -31,11 +32,20 @@ public class OrderService implements DataServiceOrder {
     @Autowired
     private ValidateIfExistsById validateIfExistsById;
 
+    @Autowired
+    private EmailService emailService;
+
 
     @Override
     public OrderResponse save(OrderRequest request) {
+        validateIfExistsById.inUser(request.getUser().getId());
+        
         Orders order = orderMapper.toEntity(request);
         Orders orderSave = orderRepository.save(order);
+
+        String email = orderRepository.findEmailByOrderId(orderSave.getId());
+        
+        emailService.sendOrderReceivedEmail(email,orderSave.getId());
 
         return orderMapper.toResponse(orderSave);
     }
@@ -43,6 +53,7 @@ public class OrderService implements DataServiceOrder {
     @Override
     public OrderResponse update(Long id, OrderRequest request) {
         validateIfExistsById.inOrder(id);
+        validateIfExistsById.inUser(request.getUser().getId());
         
         Orders order = orderMapper.toEntity(id, request);
         Orders orderUpdate = orderRepository.save(order);
@@ -72,5 +83,20 @@ public class OrderService implements DataServiceOrder {
     public void delete(Long id) {
         validateIfExistsById.inOrder(id);
         orderRepository.deleteById(id);
+    }
+
+    @Override
+    public OrderResponse saveByUser(Long userId) {
+        validateIfExistsById.inUser(userId);
+        
+        Orders orders = orderMapper.toEntityByUser(userId);
+        Orders orderSave = orderRepository.save(orders);
+
+        return orderMapper.toResponse(orderSave);
+    }
+
+    @Override
+    public String findEmailByOrderId(Long id) {
+        return orderRepository.findEmailByOrderId(id);
     }
 }

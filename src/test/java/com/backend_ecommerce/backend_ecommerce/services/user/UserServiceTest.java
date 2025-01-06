@@ -39,7 +39,7 @@ public class UserServiceTest {
     private CreatePageable createPageable;
 
     @Mock
-    private ValidateEmailExists validateEmailExists;
+    private ValidateEmail validateEmail;
 
     @Mock
     private ValidateStrongPassword validateStrongPassword;
@@ -56,7 +56,7 @@ public class UserServiceTest {
         User savedUser = new User();
         UserResponse response = new UserResponse();
 
-        doNothing().when(validateEmailExists).execute(request.getEmail());
+        doNothing().when(validateEmail).execute(request.getEmail());
         doNothing().when(validateStrongPassword).execute(request.getPassword());
         when(userMapper.toEntity(request)).thenReturn(user);
         when(userRepository.save(user)).thenReturn(savedUser);
@@ -65,7 +65,7 @@ public class UserServiceTest {
         UserResponse result = userService.save(request);
 
         assertEquals(response, result);
-        verify(validateEmailExists).execute(request.getEmail());
+        verify(validateEmail).execute(request.getEmail());
         verify(validateStrongPassword).execute(request.getPassword());
         verify(userMapper).toEntity(request);
         verify(userRepository).save(user);
@@ -80,7 +80,7 @@ public class UserServiceTest {
         User updatedUser = new User();
         UserResponse response = new UserResponse();
 
-        doNothing().when(validateEmailExists).execute(request.getEmail(), id);
+        doNothing().when(validateEmail).execute(request.getEmail(), id);
         doNothing().when(validateStrongPassword).execute(request.getPassword());
         when(userMapper.toEntity(id, request)).thenReturn(user);
         when(userRepository.save(user)).thenReturn(updatedUser);
@@ -89,7 +89,7 @@ public class UserServiceTest {
         UserResponse result = userService.update(id, request);
 
         assertEquals(response, result);
-        verify(validateEmailExists).execute(request.getEmail(), id);
+        verify(validateEmail).execute(request.getEmail(), id);
         verify(validateStrongPassword).execute(request.getPassword());
         verify(userMapper).toEntity(id, request);
         verify(userRepository).save(user);

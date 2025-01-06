@@ -13,11 +13,14 @@ import com.backend_ecommerce.backend_ecommerce.models.entity.Orders;
 import com.backend_ecommerce.backend_ecommerce.models.mapper.OrderItemMapper;
 import com.backend_ecommerce.backend_ecommerce.models.repository.OrderItemRepository;
 import com.backend_ecommerce.backend_ecommerce.models.request.OrderItemRequest;
+import com.backend_ecommerce.backend_ecommerce.models.request.ProductAndQuantityRequest;
 import com.backend_ecommerce.backend_ecommerce.models.response.OrderItemPageResponse;
 import com.backend_ecommerce.backend_ecommerce.models.response.OrderItemResponse;
+import com.backend_ecommerce.backend_ecommerce.models.response.OrderResponse;
 import com.backend_ecommerce.backend_ecommerce.models.response.PageResponse;
 import com.backend_ecommerce.backend_ecommerce.models.utils.PageFilter;
 import com.backend_ecommerce.backend_ecommerce.services.shared.CreatePageable;
+import com.backend_ecommerce.backend_ecommerce.services.shared.EmailService;
 import com.backend_ecommerce.backend_ecommerce.services.shared.ValidateIfExistsById;
 
 @Service
@@ -34,6 +37,15 @@ public class OrderItemService implements DataServiceOrderItem {
 
     @Autowired
     private ValidateIfExistsById validateIfExistsById;
+
+    @Autowired
+    private OrderService orderService;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private CalculateTotalPriceOfOrder calculateTotalPriceOfOrder;
     
     @Override
     public OrderItemResponse save(OrderItemRequest request) {
@@ -89,5 +101,26 @@ public class OrderItemService implements DataServiceOrderItem {
         Page<OrderItem> orderItems = orderItemRepository.findByOrder(order, pageable);
 
         return orderItemMapper.toResponsePage(ordersAll, orderItems);
+    }
+
+    @Override
+    public void saveAll(Long userId, List<ProductAndQuantityRequest> request) {
+        OrderResponse orderSaved = orderService.saveByUser(userId);
+
+        String email = orderService.findEmailByOrderId(orderSaved.getId());
+
+        List<OrderItem> entityList = orderItemMapper.toEntityList(request, orderSaved);
+        orderItemRepository.saveAll(entityList);
+
+        Orders order = orderItemMapper.toOrderEntity(orderSaved.getId());
+        List<OrderItem> orderItems = orderItemRepository.findByOrder(order);
+
+        String totalPrice = calculateTotalPriceOfOrder.execute(orderItems);
+
+        emailService.sendOrderReceivedEmail(
+            email, 
+            orderSaved.getId(),
+            totalPrice
+        );
     }
 }

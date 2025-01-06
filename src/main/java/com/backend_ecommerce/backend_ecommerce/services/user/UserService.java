@@ -14,6 +14,7 @@ import com.backend_ecommerce.backend_ecommerce.models.response.PageResponse;
 import com.backend_ecommerce.backend_ecommerce.models.response.UserResponse;
 import com.backend_ecommerce.backend_ecommerce.models.utils.PageFilter;
 import com.backend_ecommerce.backend_ecommerce.services.shared.CreatePageable;
+import com.backend_ecommerce.backend_ecommerce.services.shared.EmailService;
 import com.backend_ecommerce.backend_ecommerce.services.shared.ValidateIfExistsById;
 
 @Service
@@ -32,18 +33,23 @@ public class UserService implements DataServiceUser {
     private ValidateIfExistsById validateIfExistsById;
 
     @Autowired
-    private ValidateEmailExists validateEmailExists;
+    private ValidateEmail validateEmail;
 
     @Autowired
     private ValidateStrongPassword validateStrongPassword;
 
+    @Autowired
+    private EmailService emailService;
+
     @Override
     public UserResponse save(UserRequest request) {
-        validateEmailExists.execute(request.getEmail());
+        validateEmail.execute(request.getEmail());
         validateStrongPassword.execute(request.getPassword());
         
         User user = userMapper.toEntity(request);
         User userSave = userRepository.save(user);
+
+        emailService.sendWelcomeEmail(userSave.getEmail());
 
         return userMapper.toResponse(userSave);
     }
@@ -51,7 +57,7 @@ public class UserService implements DataServiceUser {
     @Override
     public UserResponse update(Long id, UserRequest request) {
         validateIfExistsById.inUser(id);
-        validateEmailExists.execute(request.getEmail(), id);
+        validateEmail.execute(request.getEmail(), id);
         validateStrongPassword.execute(request.getPassword());
 
         User user = userMapper.toEntity(id,request);
