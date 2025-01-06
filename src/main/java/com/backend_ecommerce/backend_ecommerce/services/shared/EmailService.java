@@ -22,6 +22,15 @@ public class EmailService {
     }
 
     public void sendWelcomeEmail(String to) {
-        sendEmail(to, "Welcome", "Welcome to our platform");
+        sendEmail(to, "Bem Vindo", "Seja bem vindo ao nosso e-commerce");
     }
+
+    public void sendOrderReceivedEmail(String to, Long orderId) {
+        sendEmail(to, "Pedido " + orderId, "Seu pedido foi recebido");
+    }
+
+    public void sendOrderReceivedEmail(String to, Long orderId, String totalPrice) {
+        sendEmail(to, "Pedido " + orderId, "Seu pedido foi recebido. O valor total é de " + totalPrice);
+    }
+
 }
