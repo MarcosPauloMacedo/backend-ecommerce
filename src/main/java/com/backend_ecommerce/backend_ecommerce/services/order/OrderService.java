@@ -95,6 +95,7 @@ public class OrderService implements DataServiceOrder {
         return orderMapper.toResponse(orderSave);
     }
 
+    @Override
     public String findEmailByOrderId(Long id) {
         return orderRepository.findEmailByOrderId(id);
     }

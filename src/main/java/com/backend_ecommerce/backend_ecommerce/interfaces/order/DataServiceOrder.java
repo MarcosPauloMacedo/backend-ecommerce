@@ -8,4 +8,5 @@ import com.backend_ecommerce.backend_ecommerce.models.response.OrderResponse;
 public interface DataServiceOrder extends DataService<OrderResponse, OrderRequest>, 
 SelectAll<OrderResponse> {
     OrderResponse saveByUser(Long userId);
+    String findEmailByOrderId(Long orderId);
 }
