@@ -1,5 +1,7 @@
 package com.backend_ecommerce.backend_ecommerce.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend_ecommerce.backend_ecommerce.models.request.OrderItemRequest;
+import com.backend_ecommerce.backend_ecommerce.models.request.ProductAndQuantityRequest;
 import com.backend_ecommerce.backend_ecommerce.models.response.OrderItemPageResponse;
 import com.backend_ecommerce.backend_ecommerce.models.response.OrderItemResponse;
 import com.backend_ecommerce.backend_ecommerce.models.response.PageResponse;
@@ -76,5 +79,14 @@ public class OrderItemController {
     ) {
         var pageFilter = new PageFilter(page, size, sortOrder, sortField);
         return orderItemService.selectAllByOrderId(orderId, pageFilter);
+    }
+
+    @PostMapping("/saveAll/{userId}")
+    @Operation(summary = "Salvar todos os itens do pedido baseado no ID do usuário")
+    public void saveAll(
+        @PathVariable Long userId,
+        @RequestBody List<ProductAndQuantityRequest> request
+    ) {
+        orderItemService.saveAll(userId,request);
     }
 }
