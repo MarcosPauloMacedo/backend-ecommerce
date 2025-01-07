@@ -12,6 +12,7 @@ import com.backend_ecommerce.backend_ecommerce.models.entity.User;
 import com.backend_ecommerce.backend_ecommerce.models.request.UserRequest;
 import com.backend_ecommerce.backend_ecommerce.models.response.PageResponse;
 import com.backend_ecommerce.backend_ecommerce.models.response.UserResponse;
+import com.backend_ecommerce.backend_ecommerce.services.user.PasswordService;
 
 @Component
 public class UserMapper implements MapperUser {
@@ -19,8 +20,16 @@ public class UserMapper implements MapperUser {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private PasswordService passwordService;
+
     @Override
     public User toEntity(UserRequest request) {
+        String hashPassword = passwordService.generateHashPassword(
+            request.getPassword()
+        );
+        
+        request.setPassword(hashPassword);
         return modelMapper.map(request, User.class);
     }
 
