@@ -45,7 +45,7 @@ public class UserService implements DataServiceUser {
     public UserResponse save(UserRequest request) {
         validateEmail.execute(request.getEmail());
         validateStrongPassword.execute(request.getPassword());
-        
+
         User user = userMapper.toEntity(request);
         User userSave = userRepository.save(user);
 
@@ -88,5 +88,9 @@ public class UserService implements DataServiceUser {
     public void delete(Long id) {
         validateIfExistsById.inUser(id);
         userRepository.deleteById(id);
+    }
+
+    public Boolean existsByEmail(String email) {
+        return userRepository.findByEmail(email).isPresent();
     }
 }
