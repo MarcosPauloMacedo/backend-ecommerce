@@ -30,6 +30,7 @@ public class PasswordResetTokenService implements DataServicePasswordResetToken 
     @Autowired
     private PasswordResetTokenRepository passwordResetTokenRepository;
 
+    @Override
     public void requestPasswordReset(PasswordResetTokenRequest request) {
         var passwordResetToken = passwordResetTokenMapper.toEntity(request);
         passwordResetTokenRepository.save(passwordResetToken);
@@ -40,6 +41,7 @@ public class PasswordResetTokenService implements DataServicePasswordResetToken 
         );
     }
 
+    @Override
     public void resetPassword(ResetPasswordRequest request) {
         var passwordResetToken = passwordResetTokenRepository
         .findByToken(request.getToken());
