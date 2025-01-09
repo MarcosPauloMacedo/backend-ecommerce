@@ -8,4 +8,6 @@ import com.backend_ecommerce.backend_ecommerce.models.utils.PageFilter;
 
 public interface DataServiceUser extends DataService<UserResponse, UserRequest> {
     PageResponse<UserResponse> selectAll(PageFilter pageFilter);
+    Boolean existsByEmail(String email);
+    void updatePassword(String email, String password);
 }

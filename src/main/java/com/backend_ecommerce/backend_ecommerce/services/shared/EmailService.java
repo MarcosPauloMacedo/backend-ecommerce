@@ -33,4 +33,8 @@ public class EmailService {
         sendEmail(to, "Pedido " + orderId, "Seu pedido foi recebido. O valor total é de " + totalPrice);
     }
 
+    public void sendPasswordResetEmail(String to, String token) {
+        sendEmail(to, "Redefinição de senha", "Token necessário para redefinir senha: " + token);
+    }
+
 }

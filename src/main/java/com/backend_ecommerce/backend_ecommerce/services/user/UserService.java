@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+import com.backend_ecommerce.backend_ecommerce.exceptions.ResourceNotFoundException;
 import com.backend_ecommerce.backend_ecommerce.interfaces.user.DataServiceUser;
 import com.backend_ecommerce.backend_ecommerce.models.entity.User;
 import com.backend_ecommerce.backend_ecommerce.models.mapper.UserMapper;
@@ -96,7 +97,23 @@ public class UserService implements DataServiceUser, UserDetailsService {
         return userRepository.findByEmail(email).orElseThrow();
     }
 
+    @Override
     public Boolean existsByEmail(String email) {
         return userRepository.findByEmail(email).isPresent();
+    }
+
+    @Override
+    public void updatePassword(String email, String password) {
+
+        if (existsByEmail(email)) {
+            validateStrongPassword.execute(password);
+            
+            User user = userRepository.findByEmail(email).get();
+            user.setPassword(password);
+            userRepository.save(user);
+
+        } else {
+            throw new ResourceNotFoundException("Usuário não encontrado com este email!");
+        }
     }
 }
