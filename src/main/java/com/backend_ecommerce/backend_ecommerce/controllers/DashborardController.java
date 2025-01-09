@@ -1,6 +1,7 @@
 package com.backend_ecommerce.backend_ecommerce.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +24,7 @@ public class DashborardController {
     private ProductService productService;
 
     @GetMapping("/low-stock")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Listar produtos com estoque baixo")
     public PageResponse<ProductResponse> selectByLowStock(
         @RequestParam(defaultValue = "5") int quantity,

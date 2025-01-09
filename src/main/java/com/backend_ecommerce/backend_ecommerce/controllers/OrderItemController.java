@@ -3,6 +3,7 @@ package com.backend_ecommerce.backend_ecommerce.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,6 +40,7 @@ public class OrderItemController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Listar todos os itens do pedido")
     public PageResponse<OrderItemResponse> selectAll(
         @RequestParam(defaultValue = "0") int page,
@@ -51,18 +53,21 @@ public class OrderItemController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Buscar um item do pedido pelo ID")
     public OrderItemResponse selectById(@PathVariable Long id) {
         return orderItemService.selectById(id);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Atualizar um item do pedido pelo ID")
     public OrderItemResponse update(@PathVariable Long id, @RequestBody OrderItemRequest request) {
         return orderItemService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Deletar um item do pedido pelo ID")
     public void delete(@PathVariable Long id) {
         orderItemService.delete(id);

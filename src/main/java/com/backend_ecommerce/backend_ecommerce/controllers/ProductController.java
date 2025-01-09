@@ -1,6 +1,7 @@
 package com.backend_ecommerce.backend_ecommerce.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,7 @@ public class ProductController {
     private ProductService productService;
     
     @PostMapping()
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Salvar um produto")
     public ProductResponse save(@RequestBody ProductRequest request) {
         return productService.save(request);
@@ -60,6 +62,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Atualizar um produto pelo ID")
     public ProductResponse update(@PathVariable Long id, 
     @RequestBody ProductRequest request) {
@@ -67,6 +70,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Deletar um produto pelo ID")
     public void delete(@PathVariable Long id) {
         productService.delete(id);
