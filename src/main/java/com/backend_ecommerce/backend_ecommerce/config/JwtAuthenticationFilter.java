@@ -43,21 +43,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // JWT Token está no formato "Bearer token". Remova a palavra "Bearer" e pegue apenas o Token
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             jwtToken = requestTokenHeader.substring(7);
-
             try {
                 username = jwtService.extractUsername(jwtToken);
-
             } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Não é possível obter o token JWT");
-
+                System.out.println("Não é possível obter o token JWT");
             } catch (ExpiredJwtException e) {
-                throw new ExpiredJwtException(null, null, "Token JWT expirado");
-
+                System.out.println("JWT Token expirado");
             }
-
         } else {
             logger.warn("JWT Token não está presente ou não começa com Bearer String");
-            throw new IllegalArgumentException("JWT Token não está presente ou não começa com Bearer String");
         }
 
         // Depois de obter o token, valide-o.
@@ -66,19 +60,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // Se o token for válido, configure a autenticação manualmente
             if (jwtService.validateToken(jwtToken, userDetails.getUsername())) {
-                var usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities()
-                );
-
-                usernamePasswordAuthenticationToken.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request)
-                );
-
+                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
+                usernamePasswordAuthenticationToken
+                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 // Após definir a autenticação no contexto, especificamos que o usuário está autenticado.
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }
         }
-        
         chain.doFilter(request, response);
     }
 }
