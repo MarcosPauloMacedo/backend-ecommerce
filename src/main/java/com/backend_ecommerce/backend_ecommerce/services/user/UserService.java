@@ -3,6 +3,7 @@ package com.backend_ecommerce.backend_ecommerce.services.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import com.backend_ecommerce.backend_ecommerce.interfaces.user.DataServiceUser;
@@ -18,7 +19,7 @@ import com.backend_ecommerce.backend_ecommerce.services.shared.EmailService;
 import com.backend_ecommerce.backend_ecommerce.services.shared.ValidateIfExistsById;
 
 @Service
-public class UserService implements DataServiceUser {
+public class UserService implements DataServiceUser, UserDetailsService {
     
     @Autowired
     private UserMapper userMapper;
@@ -88,6 +89,11 @@ public class UserService implements DataServiceUser {
     public void delete(Long id) {
         validateIfExistsById.inUser(id);
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public User loadUserByUsername(String email) {
+        return userRepository.findByEmail(email).orElseThrow();
     }
 
     public Boolean existsByEmail(String email) {
