@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.backend_ecommerce.backend_ecommerce.interfaces.order.DataServiceOrderItem;
@@ -19,6 +20,7 @@ import com.backend_ecommerce.backend_ecommerce.models.response.OrderItemResponse
 import com.backend_ecommerce.backend_ecommerce.models.response.OrderResponse;
 import com.backend_ecommerce.backend_ecommerce.models.response.PageResponse;
 import com.backend_ecommerce.backend_ecommerce.models.utils.PageFilter;
+import com.backend_ecommerce.backend_ecommerce.models.utils.PageOrderItemsFilter;
 import com.backend_ecommerce.backend_ecommerce.services.shared.CreatePageable;
 import com.backend_ecommerce.backend_ecommerce.services.shared.EmailService;
 import com.backend_ecommerce.backend_ecommerce.services.shared.ValidateIfExistsById;
@@ -46,6 +48,9 @@ public class OrderItemService implements DataServiceOrderItem {
 
     @Autowired
     private CalculateTotalPriceOfOrder calculateTotalPriceOfOrder;
+
+    @Autowired
+    private OrderItemSearch orderItemSearch;
     
     @Override
     public OrderItemResponse save(OrderItemRequest request) {
@@ -122,5 +127,18 @@ public class OrderItemService implements DataServiceOrderItem {
             orderSaved.getId(),
             totalPrice
         );
+    }
+
+    @Override
+    public OrderItemPageResponse selectAllAndGetTotalSales(PageFilter filter,
+    PageOrderItemsFilter pageOrderItemsFilter) {
+        Pageable pageable = createPageable.execute(filter);
+        Specification<OrderItem> specification = orderItemSearch
+        .execute(pageOrderItemsFilter);
+
+        List<OrderItem> orderItems = orderItemRepository.findAll(specification);
+        Page<OrderItem> orderItemsPage = orderItemRepository.findAll(specification,pageable);
+
+        return orderItemMapper.toResponsePage(orderItems, orderItemsPage);
     }
 }
