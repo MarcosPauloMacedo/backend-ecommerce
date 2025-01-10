@@ -56,9 +56,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Depois de obter o token, valide-o.
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userService.loadUserByUsername(username);
-
-            var authorities = userDetails.getAuthorities();
+            UserDetails userDetails = userService.loadUserByUsername(username); 
+            
             // Se o token for válido, configure a autenticação manualmente
             if (jwtService.validateToken(jwtToken, userDetails.getUsername())) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
