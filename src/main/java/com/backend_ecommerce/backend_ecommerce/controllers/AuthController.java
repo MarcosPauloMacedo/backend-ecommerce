@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import com.backend_ecommerce.backend_ecommerce.models.entity.User;
 import com.backend_ecommerce.backend_ecommerce.models.request.AuthRequest;
 import com.backend_ecommerce.backend_ecommerce.models.response.AuthResponse;
 import com.backend_ecommerce.backend_ecommerce.services.auth.JwtService;
@@ -31,8 +31,8 @@ public class AuthController {
             new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
         );
 
-        final UserDetails userDetails = userService.loadUserByUsername(authRequest.getEmail());
-        final String token = jwtService.generateToken(userDetails.getUsername());
+        final User user = userService.loadUserByUsername(authRequest.getEmail());
+        final String token = jwtService.generateToken(user);
 
         return new AuthResponse(token);
     }

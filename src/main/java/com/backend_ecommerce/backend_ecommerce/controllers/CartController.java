@@ -1,6 +1,7 @@
 package com.backend_ecommerce.backend_ecommerce.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +36,7 @@ public class CartController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Listar todos os carrinhos de compras")
     public PageResponse<CartResponse> selectAll(
     @RequestParam(defaultValue = "0") int page,

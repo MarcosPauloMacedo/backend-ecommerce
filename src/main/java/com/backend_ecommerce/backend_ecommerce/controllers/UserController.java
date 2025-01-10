@@ -1,6 +1,7 @@
 package com.backend_ecommerce.backend_ecommerce.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +36,7 @@ public class UserController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Listar todos os usuários")
     public PageResponse<UserResponse> selectAll(
         @RequestParam(defaultValue = "0") int page,
@@ -47,18 +49,21 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Buscar um usuário pelo ID")
     public UserResponse selectById(@PathVariable Long id) {
         return userService.selectById(id);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Atualizar um usuário pelo ID")
     public UserResponse update(@PathVariable Long id, @RequestBody UserRequest request) {
         return userService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Deletar um usuário pelo ID")
     public void delete(@PathVariable Long id) {
         userService.delete(id);
