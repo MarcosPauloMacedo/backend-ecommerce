@@ -18,6 +18,7 @@ import com.backend_ecommerce.backend_ecommerce.models.response.PageResponse;
 import com.backend_ecommerce.backend_ecommerce.models.utils.PageFilter;
 import com.backend_ecommerce.backend_ecommerce.services.shared.CalculateAmountToPayPerItem;
 import com.backend_ecommerce.backend_ecommerce.services.shared.CreatePageable;
+import com.backend_ecommerce.backend_ecommerce.services.shared.StockService;
 import com.backend_ecommerce.backend_ecommerce.services.shared.ValidateIfExistsById;
 
 @Service
@@ -41,8 +42,16 @@ public class CartService implements DataServiceCart {
     @Autowired
     private CalculateAmountToPayPerItem calculateAmountToPayPerItem;
 
+    @Autowired
+    private StockService stockService;
+
     @Override
     public CartResponse save(CartRequest request) {
+        stockService.validateIsExitsQuantityInStock(
+            request.getProduct().getId(), 
+            request.getQuantity()
+        );
+        
         Cart cart = cartMapper.toEntity(request);
         Cart cartSave = cartRepository.save(cart);
 
