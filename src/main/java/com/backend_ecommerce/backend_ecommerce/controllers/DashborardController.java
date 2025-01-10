@@ -1,6 +1,9 @@
 package com.backend_ecommerce.backend_ecommerce.controllers;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -48,10 +51,17 @@ public class DashborardController {
         @RequestParam(defaultValue = "10") int size,
         @RequestParam(defaultValue = "ASC") String sortOrder,
         @RequestParam(defaultValue = "id") String sortField,
-        @RequestParam(required = false) String category
+        @RequestParam(required = false) String category,
+        @RequestParam(required = false) @DateTimeFormat(
+            iso = DateTimeFormat.ISO.DATE_TIME
+        ) LocalDateTime startDateTime,
+        @RequestParam(required = false) @DateTimeFormat(
+            iso = DateTimeFormat.ISO.DATE_TIME
+        ) LocalDateTime endDateTime
     ) { 
         var pageFilter = new PageFilter(page, size, sortOrder, sortField);
-        var pageOrderItemsFilter = new PageOrderItemsFilter(category);
+        var pageOrderItemsFilter = new PageOrderItemsFilter(category, 
+        startDateTime, endDateTime);
 
         return orderItemService.selectAllAndGetTotalSales(pageFilter, pageOrderItemsFilter);
     }
