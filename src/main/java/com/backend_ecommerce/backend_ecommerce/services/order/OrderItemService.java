@@ -23,7 +23,10 @@ import com.backend_ecommerce.backend_ecommerce.models.utils.PageFilter;
 import com.backend_ecommerce.backend_ecommerce.models.utils.PageOrderItemsFilter;
 import com.backend_ecommerce.backend_ecommerce.services.shared.CreatePageable;
 import com.backend_ecommerce.backend_ecommerce.services.shared.EmailService;
+import com.backend_ecommerce.backend_ecommerce.services.shared.StockService;
 import com.backend_ecommerce.backend_ecommerce.services.shared.ValidateIfExistsById;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class OrderItemService implements DataServiceOrderItem {
@@ -51,10 +54,23 @@ public class OrderItemService implements DataServiceOrderItem {
 
     @Autowired
     private OrderItemSearch orderItemSearch;
+
+    @Autowired
+    private StockService stockService;
+
+    @Autowired
+    private ValidateStatusOrder validateStatusOrder;
     
     @Override
+    @Transactional
     public OrderItemResponse save(OrderItemRequest request) {
+        validateStatusOrder.inSave(request.getOrder().getId());
+
         OrderItem orderItem = orderItemMapper.toEntity(request);
+
+        stockService.removeStock(request.getProduct().getId(), 
+        request.getQuantity());
+
         OrderItem orderItemSave = orderItemRepository.save(orderItem);
 
         return orderItemMapper.toResponse(orderItemSave);
@@ -62,6 +78,7 @@ public class OrderItemService implements DataServiceOrderItem {
 
     @Override
     public OrderItemResponse update(Long id, OrderItemRequest request) {
+        validateStatusOrder.inUpdate(request.getOrder().getId());
         validateIfExistsById.inOrderItem(id);
 
         OrderItem orderItem = orderItemMapper.toEntity(id, request);
@@ -109,7 +126,10 @@ public class OrderItemService implements DataServiceOrderItem {
     }
 
     @Override
+    @Transactional
     public void saveAll(Long userId, List<ProductAndQuantityRequest> request) {
+        stockService.validateIsExitsQuantityInStock(request);
+        
         OrderResponse orderSaved = orderService.saveByUser(userId);
 
         String email = orderService.findEmailByOrderId(orderSaved.getId());
@@ -132,7 +152,9 @@ public class OrderItemService implements DataServiceOrderItem {
     @Override
     public OrderItemPageResponse selectAllAndGetTotalSales(PageFilter filter,
     PageOrderItemsFilter pageOrderItemsFilter) {
+
         Pageable pageable = createPageable.execute(filter);
+        
         Specification<OrderItem> specification = orderItemSearch
         .execute(pageOrderItemsFilter);
 
